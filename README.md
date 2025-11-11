@@ -72,5 +72,17 @@ This repository contains Python scripts for the geometric and statistical analys
 If you use this code or data in your work, please cite:
 
 Kaikwan Lau and Gary P. T. Choi, 
-"Geometric and statistical analysis of avian skull morphology."
-Preprint, 2025.
+"[Geometric and statistical analysis of avian skull morphology.](https://arxiv.org/abs/2511.06426)"
+arXiv preprint arXiv:2511.06426, 2025.
+
+```bibtex
+@article{lau2025geometric,
+    author    = {Lau, Kaikwan and Choi, Gary P. T.},
+    title     = {Geometric and statistical analysis of avian skull morphology},
+    journal   = {arXiv preprint arXiv:2511.06426},
+    year      = {2025},
+    eprint    = {2511.06426},
+    archivePrefix = {arXiv},
+    primaryClass = {q-bio.QM}
+}
+```
