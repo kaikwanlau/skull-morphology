@@ -4,6 +4,8 @@
 
 ![Adobe Express - combined_grid_2x3_fixed](https://github.com/user-attachments/assets/27593bac-494d-4118-8ccd-4e1875879f2c)
 
+This repository contains Python scripts for the geometric and statistical analysis of avian skull morphology.
+
 * **Categories:** The scripts are categorized into (1) Geometric Analysis, (2) Statistical Analysis.
 * **Geometric Analysis:** Extract geometric features from 3D avian skull models.
 * **Statistical Analysis:** Perform correlation analysis and modelling on the measurements.
