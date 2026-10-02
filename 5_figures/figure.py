@@ -2528,18 +2528,16 @@ def _beak_to_the_right(axes, V, sgn):
 
 
 def _gallery_cell(fig, g, folder, stem, label):
-    sub = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=g, height_ratios=[1.05, 0.95], hspace=0.02)
-    ax1 = fig.add_subplot(sub[0]); ax2 = fig.add_subplot(sub[1])
+    ax = fig.add_subplot(g)
     stl = os.path.join(folder, stem + '.stl')
     if not os.path.isfile(stl):
         raise Skip(f'mesh not found: {stl}')
     r = _gallery_fit(stl); big = load_big(stl)
     c = np.array([r['cx'], r['cy'], r['cz']]); R = r['sphere_radius']; side = np.sign(c[1])
-    lateral(ax1, big, c, R, r['_inliers'], side, seed=r['_seed'])
-    section(ax2, big, c, R, r['_inliers'], side, plane='z')
-    _beak_to_the_right((ax1, ax2), big.vertices, 1.0 if side > 0 else -1.0)
-    ax1.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
-    ax2.text(0.5, -0.03, f"fit error {r['fit_err_pct']:.1f}%", transform=ax2.transAxes, ha='center', va='top',
+    lateral(ax, big, c, R, r['_inliers'], side, seed=r['_seed'])
+    _beak_to_the_right((ax,), big.vertices, 1.0 if side > 0 else -1.0)
+    ax.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
+    ax.text(0.5, -0.03, f"fit error {r['fit_err_pct']:.1f}%", transform=ax.transAxes, ha='center', va='top',
              fontsize=GALLERY_TEXT_SIZE)
 
 
@@ -2603,8 +2601,8 @@ def _gallery_pero_cell(ax, stem, label):
 def make_gallery_figure(finch, other):
     folders = {'HC': _p(HC_DIR), 'CR': _p(CR_DIR)}
     humans = human_results()
-    fig = plt.figure(figsize=(7.4, 6.9))
-    gs = gridspec.GridSpec(3, 6, figure=fig, height_ratios=[1, 1, 0.95], hspace=0.36, wspace=0.08)
+    fig = plt.figure(figsize=(7.4, 5.0))
+    gs = gridspec.GridSpec(3, 6, figure=fig, height_ratios=[1, 1, 1.5], hspace=0.36, wspace=0.08)
 
     for ri, row in enumerate(GALLERY_ROWS):
         for ci, (key, stem, label) in enumerate(row):
