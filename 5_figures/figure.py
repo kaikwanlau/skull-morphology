@@ -2595,8 +2595,8 @@ def _gallery_pero_cell(ax, stem, label):
 def make_gallery_figure(finch, other):
     folders = {'HC': _p(HC_DIR), 'CR': _p(CR_DIR)}
     humans = human_results()
-    fig = plt.figure(figsize=(7.4, 5.0))
-    gs = gridspec.GridSpec(3, 6, figure=fig, height_ratios=[1, 1, 1.5], hspace=0.36, wspace=0.08)
+    fig = plt.figure(figsize=(7.4, 3.8))
+    gs = gridspec.GridSpec(3, 6, figure=fig, height_ratios=[1, 1, 1.8], hspace=0.18, wspace=0.08)
 
     for ri, row in enumerate(GALLERY_ROWS):
         for ci, (key, stem, label) in enumerate(row):
@@ -2610,7 +2610,12 @@ def make_gallery_figure(finch, other):
         print(f"  H. sapiens ({h['name']})", flush=True)
         _gallery_human_cell(fig, gs[2, 2 + ci], h)
 
-    fig.subplots_adjust(left=0.01, right=0.995, top=0.96, bottom=0.07)
+    fig.subplots_adjust(left=0.01, right=0.995, top=0.96, bottom=0.02)
+    # Balance visible row gaps around the taller, two-line human titles.
+    for row, offset_pt in ((1, 6.0), (2, -5.0)):
+        for ax in fig.axes[6 * row:6 * (row + 1)]:
+            pos = ax.get_position()
+            ax.set_position([pos.x0, pos.y0 + offset_pt / (72 * fig.get_figheight()), pos.width, pos.height])
     save(fig, 'FIG_other_taxa_fits')
 
 
