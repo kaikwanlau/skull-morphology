@@ -2640,7 +2640,7 @@ def human_pairs():
 FIG13_GREY = "#8c8c8c"
 FIG13_PERO_BROWN = "#8c564b"
 FIG13_EXAMPLES = [("Darwin's finch", FIG13_GREY, "FINCH", "G.DifficilisA", "Geospiza difficilis"),
-                  ("Hawaiian honeycreeper", HC_RED, "HC", 'L. caeruleirostrisA', "Loxops caeruleirostris"),
+                  ("Hawaiian honeycreeper", HC_RED, "HC", 'V. coccineaB', "Vestiaria coccinea"),
                   ("rodent", FIG13_PERO_BROWN, "PERO", "Peromyscus_Simulus_Watertight", "Peromyscus simulus"),
                   ("human cranium", HUMAN_PURPLE, "HUMAN", "BodyParts3D", "Homo sapiens")]
 FIG13_DAMAGED = 'L. caeruleirostrisA'
