@@ -2571,7 +2571,7 @@ def _gallery_human_cell(fig, spec, h):
     ax.set_aspect('equal'); ax.set_axis_off()
     if side > 0:
         ax.invert_xaxis()
-    ax.set_title("$\\it{H.\\ sapiens}$\n(" + h["name"] + ")", fontsize=GALLERY_TITLE_SIZE, pad=1.0)
+    ax.set_title("$\\it{H.\\ sapiens}$", fontsize=GALLERY_TITLE_SIZE, pad=1.0)
 
 
 def _gallery_pero_cell(ax, stem, label):
@@ -2611,7 +2611,7 @@ def make_gallery_figure(finch, other):
         _gallery_human_cell(fig, gs[2, 2 + ci], h)
 
     fig.subplots_adjust(left=0.01, right=0.995, top=0.96, bottom=0.02)
-    # Balance visible row gaps around the taller, two-line human titles.
+    # Balance visible row gaps around the taller human meshes.
     for row, offset_pt in ((1, 6.0), (2, -5.0)):
         for ax in fig.axes[6 * row:6 * (row + 1)]:
             pos = ax.get_position()
