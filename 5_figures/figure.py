@@ -2537,8 +2537,6 @@ def _gallery_cell(fig, g, folder, stem, label):
     lateral(ax, big, c, R, r['_inliers'], side, seed=r['_seed'])
     _beak_to_the_right((ax,), big.vertices, 1.0 if side > 0 else -1.0)
     ax.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
-    ax.text(0.5, -0.03, f"fit error {r['fit_err_pct']:.1f}%", transform=ax.transAxes, ha='center', va='top',
-             fontsize=GALLERY_TEXT_SIZE)
 
 
 HUMAN_PURPLE = "#6a3d9a"
@@ -2574,8 +2572,6 @@ def _gallery_human_cell(fig, spec, h):
     if side > 0:
         ax.invert_xaxis()
     ax.set_title("$\\it{H.\\ sapiens}$\n(" + h["name"] + ")", fontsize=GALLERY_TITLE_SIZE, pad=1.0)
-    ax.text(0.5, -0.03, f"fit error {h['fit_err_pct']:.1f}%",
-            transform=ax.transAxes, ha='center', va='top', fontsize=GALLERY_TEXT_SIZE)
 
 
 def _gallery_pero_cell(ax, stem, label):
@@ -2594,8 +2590,6 @@ def _gallery_pero_cell(ax, stem, label):
     if tip[0] < (lo[0] + hi[0]) / 2:
         ax.invert_xaxis()
     ax.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
-    ax.text(0.5, -0.03, f"fit error {r['fit_err_pct']:.1f}%",
-            transform=ax.transAxes, ha='center', va='top', fontsize=GALLERY_TEXT_SIZE)
 
 
 def make_gallery_figure(finch, other):
