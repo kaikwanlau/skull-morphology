@@ -2612,10 +2612,18 @@ def make_gallery_figure(finch, other):
 
     fig.subplots_adjust(left=0.01, right=0.995, top=0.96, bottom=0.02)
     # Balance visible row gaps around the taller human meshes.
-    for row, offset_pt in ((1, 6.0), (2, -5.0)):
+    for row, offset_pt in ((1, 6.0), (2, 7.0)):
         for ax in fig.axes[6 * row:6 * (row + 1)]:
             pos = ax.get_position()
             ax.set_position([pos.x0, pos.y0 + offset_pt / (72 * fig.get_figheight()), pos.width, pos.height])
+    # Trim bottom whitespace while preserving panel sizes and positions from the top.
+    old_height = fig.get_figheight()
+    positions = [ax.get_position().frozen() for ax in fig.axes]
+    new_height = old_height - 12 / 72
+    fig.set_size_inches(fig.get_figwidth(), new_height)
+    for ax, pos in zip(fig.axes, positions):
+        ax.set_position([pos.x0, (pos.y0 * old_height - 12 / 72) / new_height,
+                         pos.width, pos.height * old_height / new_height])
     save(fig, 'FIG_other_taxa_fits')
 
 
