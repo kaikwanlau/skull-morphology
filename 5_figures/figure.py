@@ -2729,7 +2729,9 @@ def fig13_generalization(finch, other):
     folders = {"FINCH": _p(FINCH_MESH_DIR), "HC": _p(HC_DIR), "CR": _p(CR_DIR)}
     fig = plt.figure(figsize=(7.4, 5.1))
     top = gridspec.GridSpec(1, 4, figure=fig, left=0.02, right=0.99, top=0.84, bottom=0.595, wspace=0.08)
-    bot = gridspec.GridSpec(1, 2, figure=fig, left=0.085, right=0.985, top=0.455, bottom=0.105, wspace=0.34,
+    plot_offset = 20 / (72 * fig.get_figheight())
+    bot = gridspec.GridSpec(1, 2, figure=fig, left=0.085, right=0.985,
+                            top=0.455 + plot_offset, bottom=0.105 + plot_offset, wspace=0.34,
                             width_ratios=[2.05, 1])
 
     for i, (group, colour, key, stem, species) in enumerate(FIG13_EXAMPLES):
@@ -2743,7 +2745,6 @@ def fig13_generalization(finch, other):
             r = _f13_bird_cell(ax, folders[key], stem, FIG13_WIRE_N[key])
         cell = top[0, i].get_position(fig)
         _f13_title(fig, cell, group, colour, species)
-        _f13_caption(fig, cell, r)
 
     axb = fig.add_subplot(bot[0, 0])
     ok = other[other.status == "ok"]
@@ -2756,7 +2757,6 @@ def fig13_generalization(finch, other):
                            (pero, FIG13_PERO_BROWN, "$\\it{Peromyscus}$ rodents", 5),
                            (hum, HUMAN_PURPLE, "human crania", 4)):
         axb.scatter(d.n_inliers, d.fit_err_pct, s=12, c=col, lw=0, zorder=z, label=f"{lab} ($n$ = {len(d)})")
-    axb.axhline(10, ls="--", lw=0.7, c="k", zorder=0)
     axb.set_xlim(0, 175); axb.set_ylim(0, 23)
     axb.set_xlabel("number of inliers", fontsize=9); axb.set_ylabel("fit error (% of radius)", fontsize=9)
     axb.tick_params(labelsize=8)
@@ -2791,6 +2791,17 @@ def fig13_generalization(finch, other):
         p = ax.get_position()
         fig.text(p.x0 - 0.075, p.y1 + 0.045, letter, fontsize=18, fontfamily="serif", va="top")
     print(f"  (b) n = {len(fin)}, {len(hcr)}, {len(pero)}, {len(hum)};  (c) n = {counts[0][0]}, {counts[1][0]}")
+    # Trim the freed bottom space without changing panel or text sizes.
+    old_height = fig.get_figheight()
+    positions = [ax.get_position().frozen() for ax in fig.axes]
+    text_positions = [t.get_position() for t in fig.texts]
+    new_height = old_height - 20 / 72
+    fig.set_size_inches(fig.get_figwidth(), new_height)
+    for ax, pos in zip(fig.axes, positions):
+        ax.set_position([pos.x0, (pos.y0 * old_height - 20 / 72) / new_height,
+                         pos.width, pos.height * old_height / new_height])
+    for text, (x, y) in zip(fig.texts, text_positions):
+        text.set_position((x, (y * old_height - 20 / 72) / new_height))
     save(fig, "FIG_generalization")
 
 
