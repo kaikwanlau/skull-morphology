@@ -2528,19 +2528,15 @@ def _beak_to_the_right(axes, V, sgn):
 
 
 def _gallery_cell(fig, g, folder, stem, label):
-    sub = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec=g, height_ratios=[1.05, 0.95], hspace=0.02)
-    ax1 = fig.add_subplot(sub[0]); ax2 = fig.add_subplot(sub[1])
+    ax = fig.add_subplot(g)
     stl = os.path.join(folder, stem + '.stl')
     if not os.path.isfile(stl):
         raise Skip(f'mesh not found: {stl}')
     r = _gallery_fit(stl); big = load_big(stl)
     c = np.array([r['cx'], r['cy'], r['cz']]); R = r['sphere_radius']; side = np.sign(c[1])
-    lateral(ax1, big, c, R, r['_inliers'], side, seed=r['_seed'])
-    section(ax2, big, c, R, r['_inliers'], side, plane='z')
-    _beak_to_the_right((ax1, ax2), big.vertices, 1.0 if side > 0 else -1.0)
-    ax1.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
-    ax2.text(0.5, -0.03, f"fit error {r['fit_err_pct']:.1f}%", transform=ax2.transAxes, ha='center', va='top',
-             fontsize=GALLERY_TEXT_SIZE)
+    lateral(ax, big, c, R, r['_inliers'], side, seed=r['_seed'])
+    _beak_to_the_right((ax,), big.vertices, 1.0 if side > 0 else -1.0)
+    ax.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
 
 
 HUMAN_PURPLE = "#6a3d9a"
@@ -2575,9 +2571,7 @@ def _gallery_human_cell(fig, spec, h):
     ax.set_aspect('equal'); ax.set_axis_off()
     if side > 0:
         ax.invert_xaxis()
-    ax.set_title("$\\it{H.\\ sapiens}$\n(" + h["name"] + ")", fontsize=GALLERY_TITLE_SIZE, pad=1.0)
-    ax.text(0.5, -0.03, f"fit error {h['fit_err_pct']:.1f}%",
-            transform=ax.transAxes, ha='center', va='top', fontsize=GALLERY_TEXT_SIZE)
+    ax.set_title("$\\it{H.\\ sapiens}$", fontsize=GALLERY_TITLE_SIZE, pad=1.0)
 
 
 def _gallery_pero_cell(ax, stem, label):
@@ -2596,15 +2590,13 @@ def _gallery_pero_cell(ax, stem, label):
     if tip[0] < (lo[0] + hi[0]) / 2:
         ax.invert_xaxis()
     ax.set_title(label, fontsize=GALLERY_TITLE_SIZE, style='italic', pad=1.0)
-    ax.text(0.5, -0.03, f"fit error {r['fit_err_pct']:.1f}%",
-            transform=ax.transAxes, ha='center', va='top', fontsize=GALLERY_TEXT_SIZE)
 
 
 def make_gallery_figure(finch, other):
     folders = {'HC': _p(HC_DIR), 'CR': _p(CR_DIR)}
     humans = human_results()
-    fig = plt.figure(figsize=(7.4, 6.9))
-    gs = gridspec.GridSpec(3, 6, figure=fig, height_ratios=[1, 1, 0.95], hspace=0.36, wspace=0.08)
+    fig = plt.figure(figsize=(7.4, 3.8))
+    gs = gridspec.GridSpec(3, 6, figure=fig, height_ratios=[1, 1, 1.8], hspace=0.18, wspace=0.08)
 
     for ri, row in enumerate(GALLERY_ROWS):
         for ci, (key, stem, label) in enumerate(row):
@@ -2618,7 +2610,20 @@ def make_gallery_figure(finch, other):
         print(f"  H. sapiens ({h['name']})", flush=True)
         _gallery_human_cell(fig, gs[2, 2 + ci], h)
 
-    fig.subplots_adjust(left=0.01, right=0.995, top=0.96, bottom=0.07)
+    fig.subplots_adjust(left=0.01, right=0.995, top=0.96, bottom=0.02)
+    # Balance visible row gaps around the taller human meshes.
+    for row, offset_pt in ((1, 6.0), (2, 7.0)):
+        for ax in fig.axes[6 * row:6 * (row + 1)]:
+            pos = ax.get_position()
+            ax.set_position([pos.x0, pos.y0 + offset_pt / (72 * fig.get_figheight()), pos.width, pos.height])
+    # Trim bottom whitespace while preserving panel sizes and positions from the top.
+    old_height = fig.get_figheight()
+    positions = [ax.get_position().frozen() for ax in fig.axes]
+    new_height = old_height - 12 / 72
+    fig.set_size_inches(fig.get_figwidth(), new_height)
+    for ax, pos in zip(fig.axes, positions):
+        ax.set_position([pos.x0, (pos.y0 * old_height - 12 / 72) / new_height,
+                         pos.width, pos.height * old_height / new_height])
     save(fig, 'FIG_other_taxa_fits')
 
 
@@ -2635,7 +2640,7 @@ def human_pairs():
 FIG13_GREY = "#8c8c8c"
 FIG13_PERO_BROWN = "#8c564b"
 FIG13_EXAMPLES = [("Darwin's finch", FIG13_GREY, "FINCH", "G.DifficilisA", "Geospiza difficilis"),
-                  ("Hawaiian honeycreeper", HC_RED, "HC", 'L. caeruleirostrisA', "Loxops caeruleirostris"),
+                  ("Hawaiian honeycreeper", HC_RED, "HC", 'V. coccineaB', "Vestiaria coccinea"),
                   ("rodent", FIG13_PERO_BROWN, "PERO", "Peromyscus_Simulus_Watertight", "Peromyscus simulus"),
                   ("human cranium", HUMAN_PURPLE, "HUMAN", "BodyParts3D", "Homo sapiens")]
 FIG13_DAMAGED = 'L. caeruleirostrisA'
@@ -2724,7 +2729,9 @@ def fig13_generalization(finch, other):
     folders = {"FINCH": _p(FINCH_MESH_DIR), "HC": _p(HC_DIR), "CR": _p(CR_DIR)}
     fig = plt.figure(figsize=(7.4, 5.1))
     top = gridspec.GridSpec(1, 4, figure=fig, left=0.02, right=0.99, top=0.84, bottom=0.595, wspace=0.08)
-    bot = gridspec.GridSpec(1, 2, figure=fig, left=0.085, right=0.985, top=0.455, bottom=0.105, wspace=0.34,
+    plot_offset = 20 / (72 * fig.get_figheight())
+    bot = gridspec.GridSpec(1, 2, figure=fig, left=0.085, right=0.985,
+                            top=0.455 + plot_offset, bottom=0.105 + plot_offset, wspace=0.34,
                             width_ratios=[2.05, 1])
 
     for i, (group, colour, key, stem, species) in enumerate(FIG13_EXAMPLES):
@@ -2738,7 +2745,6 @@ def fig13_generalization(finch, other):
             r = _f13_bird_cell(ax, folders[key], stem, FIG13_WIRE_N[key])
         cell = top[0, i].get_position(fig)
         _f13_title(fig, cell, group, colour, species)
-        _f13_caption(fig, cell, r)
 
     axb = fig.add_subplot(bot[0, 0])
     ok = other[other.status == "ok"]
@@ -2751,7 +2757,6 @@ def fig13_generalization(finch, other):
                            (pero, FIG13_PERO_BROWN, "$\\it{Peromyscus}$ rodents", 5),
                            (hum, HUMAN_PURPLE, "human crania", 4)):
         axb.scatter(d.n_inliers, d.fit_err_pct, s=12, c=col, lw=0, zorder=z, label=f"{lab} ($n$ = {len(d)})")
-    axb.axhline(10, ls="--", lw=0.7, c="k", zorder=0)
     axb.set_xlim(0, 175); axb.set_ylim(0, 23)
     axb.set_xlabel("number of inliers", fontsize=9); axb.set_ylabel("fit error (% of radius)", fontsize=9)
     axb.tick_params(labelsize=8)
@@ -2786,6 +2791,17 @@ def fig13_generalization(finch, other):
         p = ax.get_position()
         fig.text(p.x0 - 0.075, p.y1 + 0.045, letter, fontsize=18, fontfamily="serif", va="top")
     print(f"  (b) n = {len(fin)}, {len(hcr)}, {len(pero)}, {len(hum)};  (c) n = {counts[0][0]}, {counts[1][0]}")
+    # Trim the freed bottom space without changing panel or text sizes.
+    old_height = fig.get_figheight()
+    positions = [ax.get_position().frozen() for ax in fig.axes]
+    text_positions = [t.get_position() for t in fig.texts]
+    new_height = old_height - 20 / 72
+    fig.set_size_inches(fig.get_figwidth(), new_height)
+    for ax, pos in zip(fig.axes, positions):
+        ax.set_position([pos.x0, (pos.y0 * old_height - 20 / 72) / new_height,
+                         pos.width, pos.height * old_height / new_height])
+    for text, (x, y) in zip(fig.texts, text_positions):
+        text.set_position((x, (y * old_height - 20 / 72) / new_height))
     save(fig, "FIG_generalization")
 
 
