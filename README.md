@@ -4,6 +4,8 @@ Python code and data for measuring skull dimensions, orbital radius and neurocra
 
 By **Kaikwan Lau and Gary P. T. Choi**.
 
+**Accepted for publication in PLOS Computational Biology.**
+
 [Project website](https://kaikwanlau.github.io/skull-morphology/) · [Getting started](docs/START_HERE.md) · [Read the paper](https://arxiv.org/abs/2511.06426)
 
 <p align="center"><a href="docs/assets/demo.mp4"><img src="demo.gif" width="800" alt="A real skull mesh progresses through a bounding box, curvature-based orbit selection, a fitted sphere and a braincase ellipsoid." /></a></p>
